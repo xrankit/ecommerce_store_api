@@ -198,9 +198,3 @@ fields:
 POST:
 
 - /auth/login
-
-## ToDo
-
-- Add graphql support
-- Add pagination
-- Add another language support
