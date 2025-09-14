@@ -1,14 +1,20 @@
 import mongoose from "mongoose";
+import { config } from "dotenv";
+import { expand } from "dotenv-expand";
 
-const mongoUri = process.env.DATABASE_URL || "mongodb://localhost:27017/testDB";
+const myEnv = config();
+expand(myEnv);
 
-if (!mongoose.connection.readyState) {
-  mongoose.connect(mongoUri);
+const mongoUri = process.env.DATABASE_URL;
+
+if (!mongoUri) {
+  console.error("❌ DATABASE_URL not found in .env file");
+  process.exit(1);
 }
 
-const db = mongoose.connection;
+mongoose.connect(mongoUri)
+  .then(() => console.log("✅ MongoDB Atlas connected successfully"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
 
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => console.log("MongoDB connected successfully"));
+export default mongoose.connection;
 
-export default db;
