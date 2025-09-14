@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import { getAllProducts, getProductCategories, getProductsInCategory, getProduct, addProduct, editProduct, deleteProduct } from "../controller/product";
+import { getAllProducts, getProductCategories, getProductsInCategory, getProduct, addProduct, editProduct, deleteProduct } from "../controller/product.js";
 
 router.get("/", getAllProducts);
 router.get("/categories", getProductCategories);

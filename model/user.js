@@ -1,44 +1,74 @@
-import { Schema, model } from 'mongoose'
-const schema = Schema
+import { Schema, model } from "mongoose";
 
-const userSchema = new schema({
-    id:{
-        type:Number,
-        required:true
+const userSchema = new Schema({
+  id: {
+    type: Number,
+    required: true,
+    unique: true, // each user should have a unique id
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true, // no duplicate emails
+    lowercase: true, // normalize email
+    trim: true,
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true, // each username must be unique
+    trim: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6, // security: min password length
+  },
+  name: {
+    firstname: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    email:{
-        type:String,
-        required:true
+    lastname: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    username:{
-        type:String,
-        required:true
+  },
+  address: {
+    city: {
+      type: String,
+      default: "",
     },
-    password:{
-        type:String,
-        required:true
+    street: {
+      type: String,
+      default: "",
     },
-    name:{
-        firstname:{
-            type:String,
-            required:true
-        },
-        lastname:{
-            type:String,
-            required:true
-        }
+    number: {
+      type: Number,
+      default: null,
     },
-    address:{
-        city:String,
-        street:String,
-        number:Number,
-        zipcode:String,
-        geolocation:{
-            lat:String,
-            long:String
-        }
+    zipcode: {
+      type: String,
+      default: "",
     },
-    phone:String
-})
+    geolocation: {
+      lat: {
+        type: String,
+        default: "",
+      },
+      long: {
+        type: String,
+        default: "",
+      },
+    },
+  },
+  phone: {
+    type: String,
+    default: "",
+  },
+});
 
-export default model('user',userSchema)
+// Export model (capitalized name)
+export default model("User", userSchema);

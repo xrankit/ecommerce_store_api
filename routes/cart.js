@@ -1,6 +1,6 @@
 import { Router } from 'express'
 const router = Router()
-import { getAllCarts, getSingleCart, getCartsbyUserid, addCart, editCart, deleteCart } from '../controller/cart'
+import { getAllCarts, getSingleCart, getCartsbyUserid, addCart, editCart, deleteCart } from '../controller/cart.js'
 
 router.get('/',getAllCarts)
 router.get('/:id',getSingleCart)

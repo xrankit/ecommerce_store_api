@@ -1,110 +1,118 @@
-import { find, findOne } from '../model/cart';
+import Cart from "../model/cart.js";
 
-export function getAllCarts(req, res) {
-	const limit = Number(req.query.limit) || 0;
-	const sort = req.query.sort == 'desc' ? -1 : 1;
-	const startDate = req.query.startdate || new Date('1970-1-1');
-	const endDate = req.query.enddate || new Date();
+// GET all carts (with optional limit, sort, date range)
+export async function getAllCarts(req, res) {
+  try {
+    const limit = Number(req.query.limit) || 0;
+    const sort = req.query.sort === "desc" ? -1 : 1;
+    const startDate = new Date(req.query.startdate || "1970-01-01");
+    const endDate = new Date(req.query.enddate || new Date());
 
-	console.log(startDate, endDate);
+    const carts = await Cart.find({
+      date: { $gte: startDate, $lt: endDate },
+    })
+      .select("-_id -products._id")
+      .limit(limit)
+      .sort({ id: sort });
 
-	find({
-		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
-	})
-		.select('-_id -products._id')
-		.limit(limit)
-		.sort({ id: sort })
-		.then((carts) => {
-			res.json(carts);
-		})
-		.catch((err) => console.log(err));
+    res.json(carts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 
-export function getCartsbyUserid(req, res) {
-	const userId = req.params.userid;
-	const startDate = req.query.startdate || new Date('1970-1-1');
-	const endDate = req.query.enddate || new Date();
+// GET carts by userId
+export async function getCartsByUserid(req, res) {
+  try {
+    const userId = req.params.userid;
+    const startDate = new Date(req.query.startdate || "1970-01-01");
+    const endDate = new Date(req.query.enddate || new Date());
 
-	console.log(startDate, endDate);
-	find({
-		userId,
-		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
-	})
-		.select('-_id -products._id')
-		.then((carts) => {
-			res.json(carts);
-		})
-		.catch((err) => console.log(err));
+    const carts = await Cart.find({
+      userId,
+      date: { $gte: startDate, $lt: endDate },
+    }).select("-_id -products._id");
+
+    res.json(carts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 
-export function getSingleCart(req, res) {
-	const id = req.params.id;
-	findOne({
-		id,
-	})
-		.select('-_id -products._id')
-		.then((cart) => res.json(cart))
-		.catch((err) => console.log(err));
+// GET single cart by ID
+export async function getSingleCart(req, res) {
+  try {
+    const id = req.params.id;
+    const cart = await Cart.findOne({ id }).select("-_id -products._id");
+
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
+    res.json(cart);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 
-export function addCart(req, res) {
-	if (typeof req.body == undefined) {
-		res.json({
-			status: 'error',
-			message: 'data is undefined',
-		});
-	} else {
-		//     let cartCount = 0;
-		// Cart.find().countDocuments(function (err, count) {
-		//   cartCount = count
-		//   })
+// ADD new cart
+export async function addCart(req, res) {
+  try {
+    if (!req.body) {
+      return res.status(400).json({ message: "Data is required" });
+    }
 
-		//     .then(() => {
-		const cart = {
-			id: 11,
-			userId: req.body.userId,
-			date: req.body.date,
-			products: req.body.products,
-		};
-		// cart.save()
-		//   .then(cart => res.json(cart))
-		//   .catch(err => console.log(err))
+    const { userId, date, products } = req.body;
 
-		res.json(cart);
-		// })
+    // auto-generate id (count + 1)
+    const count = await Cart.countDocuments();
+    const newCart = new Cart({
+      id: count + 1,
+      userId,
+      date,
+      products,
+    });
 
-		//res.json({...req.body,id:Cart.find().count()+1})
-	}
+    const savedCart = await newCart.save();
+    res.status(201).json(savedCart);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 
-export function editCart(req, res) {
-	if (typeof req.body == undefined || req.params.id == null) {
-		res.json({
-			status: 'error',
-			message: 'something went wrong! check your sent data',
-		});
-	} else {
-		res.json({
-			id: parseInt(req.params.id),
-			userId: req.body.userId,
-			date: req.body.date,
-			products: req.body.products,
-		});
-	}
+// EDIT cart
+export async function editCart(req, res) {
+  try {
+    const id = req.params.id;
+    if (!req.body) {
+      return res.status(400).json({ message: "Data is required" });
+    }
+
+    const updatedCart = await Cart.findOneAndUpdate(
+      { id },
+      req.body,
+      { new: true }
+    ).select("-_id -products._id");
+
+    if (!updatedCart) return res.status(404).json({ message: "Cart not found" });
+    res.json(updatedCart);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 
-export function deleteCart(req, res) {
-	if (req.params.id == null) {
-		res.json({
-			status: 'error',
-			message: 'cart id should be provided',
-		});
-	} else {
-		findOne({ id: req.params.id })
-			.select('-_id -products._id')
-			.then((cart) => {
-				res.json(cart);
-			})
-			.catch((err) => console.log(err));
-	}
+// DELETE cart
+export async function deleteCart(req, res) {
+  try {
+    const id = req.params.id;
+    const deletedCart = await Cart.findOneAndDelete({ id });
+
+    if (!deletedCart) return res.status(404).json({ message: "Cart not found" });
+    res.json({ message: "Cart deleted successfully", cart: deletedCart });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 }
