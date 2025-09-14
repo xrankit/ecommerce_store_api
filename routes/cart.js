@@ -13,4 +13,4 @@ router.put('/:id',editCart)
 router.patch('/:id',editCart)
 router.delete('/:id',deleteCart)
 
-export default router
+export default router;

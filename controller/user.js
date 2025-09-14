@@ -1,6 +1,6 @@
-const User = require('../model/user').default;
+import User from '../model/user';
 
-module.exports.getAllUser = (req, res) => {
+export function getAllUser(req, res) {
 	const limit = Number(req.query.limit) || 0;
 	const sort = req.query.sort == 'desc' ? -1 : 1;
 
@@ -14,9 +14,9 @@ module.exports.getAllUser = (req, res) => {
 			res.json(users);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.getUser = (req, res) => {
+export function getUser(req, res) {
 	const id = req.params.id;
 
 	User.findOne({
@@ -27,9 +27,9 @@ module.exports.getUser = (req, res) => {
 			res.json(user);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.addUser = (req, res) => {
+export function addUser(req, res) {
 	if (typeof req.body == undefined) {
 		res.json({
 			status: 'error',
@@ -72,9 +72,9 @@ module.exports.addUser = (req, res) => {
 
 		//res.json({id:User.find().count()+1,...req.body})
 	}
-};
+}
 
-module.exports.editUser = (req, res) => {
+export function editUser(req, res) {
 	if (typeof req.body == undefined || req.params.id == null) {
 		res.json({
 			status: 'error',
@@ -103,9 +103,9 @@ module.exports.editUser = (req, res) => {
 			phone: req.body.phone,
 		});
 	}
-};
+}
 
-module.exports.deleteUser = (req, res) => {
+export function deleteUser(req, res) {
 	if (req.params.id == null) {
 		res.json({
 			status: 'error',
@@ -119,4 +119,4 @@ module.exports.deleteUser = (req, res) => {
 			})
 			.catch((err) => console.log(err));
 	}
-};
+}

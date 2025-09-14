@@ -1,7 +1,7 @@
-const User = require('../model/user').default;
-const jwt = require('jsonwebtoken');
+import User from '../model/user';
+import { sign } from 'jsonwebtoken';
 
-module.exports.login = (req, res) => {
+export function login(req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 	if (username && password) {
@@ -12,7 +12,7 @@ module.exports.login = (req, res) => {
 			.then((user) => {
 				if (user) {
 					res.json({
-						token: jwt.sign({ user: username }, 'secret_key'),
+						token: sign({ user: username }, 'secret_key'),
 					});
 				} else {
 					res.status(401);
@@ -23,4 +23,4 @@ module.exports.login = (req, res) => {
 				console.error(err);
 			});
 	}
-};
+}

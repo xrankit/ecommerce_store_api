@@ -1,7 +1,7 @@
-const mongoose = require('mongoose')
-const schema = mongoose.Schema
-const Product = require('./product').default
-const User = require('./user').default
+import { Schema, model } from 'mongoose'
+const schema = Schema
+import Product from './product'
+import User from './user'
 
 const cartSchema = new schema({
     id:{
@@ -32,4 +32,4 @@ const cartSchema = new schema({
    ]
 })
 
-module.exports =mongoose.model('cart',cartSchema)
+export default model('cart', cartSchema)

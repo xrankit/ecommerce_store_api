@@ -1,6 +1,6 @@
-const Product = require('../model/product').default;
+import Product from '../model/product';
 
-module.exports.getAllProducts = (req, res) => {
+export function getAllProducts(req, res) {
 	const limit = Number(req.query.limit) || 0;
 	const sort = req.query.sort == 'desc' ? -1 : 1;
 
@@ -12,9 +12,9 @@ module.exports.getAllProducts = (req, res) => {
 			res.json(products);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.getProduct = (req, res) => {
+export function getProduct(req, res) {
 	const id = req.params.id;
 
 	Product.findOne({
@@ -25,17 +25,17 @@ module.exports.getProduct = (req, res) => {
 			res.json(product);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.getProductCategories = (req, res) => {
+export function getProductCategories(req, res) {
 	Product.distinct('category')
 		.then((categories) => {
 			res.json(categories);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.getProductsInCategory = (req, res) => {
+export function getProductsInCategory(req, res) {
 	const category = req.params.category;
 	const limit = Number(req.query.limit) || 0;
 	const sort = req.query.sort == 'desc' ? -1 : 1;
@@ -50,9 +50,9 @@ module.exports.getProductsInCategory = (req, res) => {
 			res.json(products);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.addProduct = (req, res) => {
+export function addProduct(req, res) {
 	if (typeof req.body == undefined) {
 		res.json({
 			status: 'error',
@@ -79,9 +79,9 @@ module.exports.addProduct = (req, res) => {
 		res.json(product);
 		// });
 	}
-};
+}
 
-module.exports.editProduct = (req, res) => {
+export function editProduct(req, res) {
 	if (typeof req.body == undefined || req.params.id == null) {
 		res.json({
 			status: 'error',
@@ -97,9 +97,9 @@ module.exports.editProduct = (req, res) => {
 			category: req.body.category,
 		});
 	}
-};
+}
 
-module.exports.deleteProduct = (req, res) => {
+export function deleteProduct(req, res) {
 	if (req.params.id == null) {
 		res.json({
 			status: 'error',
@@ -115,4 +115,4 @@ module.exports.deleteProduct = (req, res) => {
 			})
 			.catch((err) => console.log(err));
 	}
-};
+}
