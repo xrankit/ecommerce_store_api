@@ -40,18 +40,12 @@ app.use('/carts', cartRoute);
 app.use('/users', userRoute);
 app.use('/auth', authRoute);
 
-//mongoose
-mongoose.set('useFindAndModify', false);
-mongoose.set('useUnifiedTopology', true);
-mongoose
-	.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
-	.then(() => {
-		app.listen(port, () => {
-			console.log('connect');
-		});
-	})
-	.catch((err) => {
-		console.log(err);
-	});
+//mongoose	
+require('dotenv').config();
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.DATABASE_URL)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 module.exports = app;
