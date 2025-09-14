@@ -10,7 +10,7 @@
             </svg>
             Products</h2>
         <h3 id="p-all">Get all products</h3>
-        <pre><code>fetch(<span class="c-api">'https://fakestoreapi.com/products'</span>)
+        <pre><code>fetch(<span class="c-api">'https://ecommercestoreapi.com/products'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -39,7 +39,7 @@
 
 
         <h3 id="p-single">Get a single product</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products/1'</span>)
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products/1'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -58,7 +58,7 @@
 
 
         <h3 id="p-limit">Limit results</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products?limit=5'</span>)
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products?limit=5'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -88,7 +88,7 @@
 
 
         <h3 id="p-sort">Sort results</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products?sort=desc'</span>)
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products?sort=desc'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <p>
@@ -127,7 +127,7 @@
 
 
         <h3 id="p-categories">Get all categories</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products/categories'</span>)
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products/categories'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -144,7 +144,7 @@
 
 
         <h3 id="p-category">Get products in a specific category</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products/category/jewelery'</span>)
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products/category/jewelery'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <p>
@@ -183,7 +183,7 @@
 
 
         <h3 id="p-new">Add new product</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products'</span>,{
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products'</span>,{
             method:"POST",
             body:JSON.stringify(
                 {
@@ -224,7 +224,7 @@
 
 
         <h3 id="p-update">Update a product</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products/7'</span>,{
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products/7'</span>,{
             method:"PUT",
             body:JSON.stringify(
                 {
@@ -238,7 +238,7 @@
         })
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products/7'</span>,{
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products/7'</span>,{
                 method:"PATCH",
                 body:JSON.stringify(
                     {
@@ -278,7 +278,7 @@
 
 
         <h3 id="p-delete">Delete a product</h3>
-        <pre><code>fetch('<span class="c-api">https://fakestoreapi.com/products/6'</span>,{
+        <pre><code>fetch('<span class="c-api">https://ecommercestoreapi.com/products/6'</span>,{
             method:"DELETE"
         })
             .then(res=>res.json())
