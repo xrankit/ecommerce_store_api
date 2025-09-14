@@ -5,6 +5,14 @@ import cors from 'cors';
 import { join } from 'path';
 import { config } from 'dotenv';
 import { expand } from 'dotenv-expand';
+
+//routes
+import productRoute from '/./routes/product';
+import homeRoute from '../routes/home';
+import cartRoute from '../routes/cart';
+import userRoute from '../routes/user';
+import authRoute from '../routes/auth';
+
 const myEnv = config();
 expand(myEnv);
 
@@ -13,13 +21,6 @@ const app = express();
 
 //port
 const port = process.env.PORT || 6400;
-
-//routes
-import productRoute from './routes/product';
-import homeRoute from './routes/home';
-import cartRoute from './routes/cart';
-import userRoute from './routes/user';
-import authRoute from './routes/auth';
 
 //middleware
 app.use(cors());

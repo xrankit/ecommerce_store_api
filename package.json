@@ -1,6 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
+  "type": "module",
   "description": "EcommerceStoreAPI is a REST API that provides you fake e-commerce JSON data",
   "main": "server.js",
   "scripts": {
@@ -15,8 +16,8 @@
     "dotenv": "^16.0.0",
     "dotenv-expand": "^8.0.1",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.6"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1"
   },
   "devDependencies": {
     "ejs": "^3.1.6",
