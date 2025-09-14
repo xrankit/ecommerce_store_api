@@ -1,10 +1,10 @@
 import { Router } from 'express'
 const router = Router()
-import { getAllCarts, getSingleCart, getCartsbyUserid, addCart, editCart, deleteCart } from '../controller/cart.js'
+import { getAllCarts, getSingleCart, getCartsByUserid, addCart, editCart, deleteCart } from '../controller/cart.js';
 
 router.get('/',getAllCarts)
 router.get('/:id',getSingleCart)
-router.get('/user/:userid',getCartsbyUserid)
+router.get('/user/:userid',getCartsByUserid)
 
 router.post('/',addCart)
 //router.post('/:id',cart.addtoCart)

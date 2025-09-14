@@ -1,8 +1,45 @@
 import User from "../model/user.js";
-import { sign } from "jsonwebtoken";
-import bcrypt from "bcrypt"; // for password hashing
+import pkg from "jsonwebtoken";
+const { sign } = pkg;
+import bcrypt from "bcryptjs";
 
-// Login Controller
+// ====================
+// REGISTER Controller
+// ====================
+export async function register(req, res) {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: "Username and password are required" });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ message: "Username already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+    });
+
+    const savedUser = await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully", user: savedUser });
+  } catch (err) {
+    console.error("Register error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+// ====================
+// LOGIN Controller
+// ====================
 export async function login(req, res) {
   try {
     const { username, password } = req.body;
@@ -26,8 +63,8 @@ export async function login(req, res) {
     // Generate JWT
     const token = sign(
       { id: user._id, username: user.username },
-      process.env.JWT_SECRET || "secret_key", // get from .env
-      { expiresIn: "1h" } // token expires in 1 hour
+      process.env.JWT_SECRET || "secret_key", // fallback if .env not set
+      { expiresIn: "1h" }
     );
 
     res.json({ token });
