@@ -1,16 +1,16 @@
-const express = require('express')
-const router = express.Router()
-const cart = require('../controller/cart')
+import { Router } from 'express'
+const router = Router()
+import { getAllCarts, getSingleCart, getCartsbyUserid, addCart, editCart, deleteCart } from '../controller/cart'
 
-router.get('/',cart.getAllCarts)
-router.get('/:id',cart.getSingleCart)
-router.get('/user/:userid',cart.getCartsbyUserid)
+router.get('/',getAllCarts)
+router.get('/:id',getSingleCart)
+router.get('/user/:userid',getCartsbyUserid)
 
-router.post('/',cart.addCart)
+router.post('/',addCart)
 //router.post('/:id',cart.addtoCart)
 
-router.put('/:id',cart.editCart)
-router.patch('/:id',cart.editCart)
-router.delete('/:id',cart.deleteCart)
+router.put('/:id',editCart)
+router.patch('/:id',editCart)
+router.delete('/:id',deleteCart)
 
-module.exports = router
+export default router

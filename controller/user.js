@@ -1,4 +1,4 @@
-const User = require('../model/user');
+const User = require('../model/user').default;
 
 module.exports.getAllUser = (req, res) => {
 	const limit = Number(req.query.limit) || 0;

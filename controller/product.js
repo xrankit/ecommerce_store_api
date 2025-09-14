@@ -1,4 +1,4 @@
-const Product = require('../model/product');
+const Product = require('../model/product').default;
 
 module.exports.getAllProducts = (req, res) => {
 	const limit = Number(req.query.limit) || 0;

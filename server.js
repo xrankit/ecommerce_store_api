@@ -1,12 +1,12 @@
 //initializes
-const mongoose = require('mongoose');
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const dotenv = require('dotenv');
-const dotenvExpand = require('dotenv-expand');
-const myEnv = dotenv.config();
-dotenvExpand.expand(myEnv);
+import { set, connect } from 'mongoose';
+import express, { static as expressStatic, urlencoded, json } from 'express';
+import cors from 'cors';
+import { join } from 'path';
+import { config } from 'dotenv';
+import { expand } from 'dotenv-expand';
+const myEnv = config();
+expand(myEnv);
 
 //app
 const app = express();
@@ -15,18 +15,18 @@ const app = express();
 const port = process.env.PORT || 6400;
 
 //routes
-const productRoute = require('./routes/product');
-const homeRoute = require('./routes/home');
-const cartRoute = require('./routes/cart');
-const userRoute = require('./routes/user');
-const authRoute = require('./routes/auth');
+import productRoute from './routes/product';
+import homeRoute from './routes/home';
+import cartRoute from './routes/cart';
+import userRoute from './routes/user';
+import authRoute from './routes/auth';
 
 //middleware
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, '/public')));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(expressStatic(join(__dirname, '/public')));
+app.use(urlencoded({ extended: true }));
+app.use(json());
 
 //view engine
 app.set('view engine', 'ejs');
@@ -40,9 +40,17 @@ app.use('/carts', cartRoute);
 app.use('/users', userRoute);
 app.use('/auth', authRoute);
 
-//mongoose	
-mongoose.connect(process.env.DATABASE_URL)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+//mongoose
+set('useFindAndModify', false);
+set('useUnifiedTopology', true);
+connect(process.env.DATABASE_URL, { useNewUrlParser: true })
+	.then(() => {
+		app.listen(port, () => {
+			console.log('connect');
+		});
+	})
+	.catch((err) => {
+		console.log(err);
+	});
 
-module.exports = app;
+export default app;

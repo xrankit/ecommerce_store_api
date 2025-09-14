@@ -1,6 +1,6 @@
-const Cart = require('../model/cart');
+import { find, findOne } from '../model/cart';
 
-module.exports.getAllCarts = (req, res) => {
+export function getAllCarts(req, res) {
 	const limit = Number(req.query.limit) || 0;
 	const sort = req.query.sort == 'desc' ? -1 : 1;
 	const startDate = req.query.startdate || new Date('1970-1-1');
@@ -8,7 +8,7 @@ module.exports.getAllCarts = (req, res) => {
 
 	console.log(startDate, endDate);
 
-	Cart.find({
+	find({
 		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
 	})
 		.select('-_id -products._id')
@@ -18,15 +18,15 @@ module.exports.getAllCarts = (req, res) => {
 			res.json(carts);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.getCartsbyUserid = (req, res) => {
+export function getCartsbyUserid(req, res) {
 	const userId = req.params.userid;
 	const startDate = req.query.startdate || new Date('1970-1-1');
 	const endDate = req.query.enddate || new Date();
 
 	console.log(startDate, endDate);
-	Cart.find({
+	find({
 		userId,
 		date: { $gte: new Date(startDate), $lt: new Date(endDate) },
 	})
@@ -35,19 +35,19 @@ module.exports.getCartsbyUserid = (req, res) => {
 			res.json(carts);
 		})
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.getSingleCart = (req, res) => {
+export function getSingleCart(req, res) {
 	const id = req.params.id;
-	Cart.findOne({
+	findOne({
 		id,
 	})
 		.select('-_id -products._id')
 		.then((cart) => res.json(cart))
 		.catch((err) => console.log(err));
-};
+}
 
-module.exports.addCart = (req, res) => {
+export function addCart(req, res) {
 	if (typeof req.body == undefined) {
 		res.json({
 			status: 'error',
@@ -75,9 +75,9 @@ module.exports.addCart = (req, res) => {
 
 		//res.json({...req.body,id:Cart.find().count()+1})
 	}
-};
+}
 
-module.exports.editCart = (req, res) => {
+export function editCart(req, res) {
 	if (typeof req.body == undefined || req.params.id == null) {
 		res.json({
 			status: 'error',
@@ -91,20 +91,20 @@ module.exports.editCart = (req, res) => {
 			products: req.body.products,
 		});
 	}
-};
+}
 
-module.exports.deleteCart = (req, res) => {
+export function deleteCart(req, res) {
 	if (req.params.id == null) {
 		res.json({
 			status: 'error',
 			message: 'cart id should be provided',
 		});
 	} else {
-		Cart.findOne({ id: req.params.id })
+		findOne({ id: req.params.id })
 			.select('-_id -products._id')
 			.then((cart) => {
 				res.json(cart);
 			})
 			.catch((err) => console.log(err));
 	}
-};
+}

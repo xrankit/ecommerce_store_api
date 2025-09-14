@@ -1,8 +1,8 @@
-const express = require('express')
-const router = express.Router()
-const home = require('../controller/home')
+import { Router } from 'express'
+const router = Router()
+import { indexPage, docsPage } from '../controller/home'
 
-router.get('/',home.indexPage)
-router.get('/docs',home.docsPage)
+router.get('/',indexPage)
+router.get('/docs',docsPage)
 
-module.exports = router
+export default router

@@ -1,7 +1,7 @@
-module.exports.indexPage = (req,res) => {
+export function indexPage(req,res) {
     res.render('home/index')
 }
 
-module.exports.docsPage = (req,res) => {
+export function docsPage(req,res) {
     res.render('home/docs')
 }

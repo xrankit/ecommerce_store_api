@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const schema = mongoose.Schema
+import { Schema, model } from 'mongoose'
+const schema = Schema
 
 const userSchema = new schema({
     id:{
@@ -41,4 +41,4 @@ const userSchema = new schema({
     phone:String
 })
 
-module.exports = mongoose.model('user',userSchema)
+export default model('user',userSchema)
