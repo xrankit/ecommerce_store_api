@@ -18,6 +18,13 @@ const deleteCartLimiter = rateLimit({
   message: 'Too many delete requests from this IP, please try again later'
 });
 
+// Moderate rate limiter for edit (update/patch) actions
+const editCartLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 edit requests per windowMs
+  message: 'Too many update requests from this IP, please try again later'
+});
+
 // More specific route first
 router.get('/user/:userid', getCartsByUserid);
 
@@ -31,8 +38,8 @@ router.get('/:id', getSingleCart);
 router.post('/', addCart);
 
 // Update cart (full or partial)
-router.put('/:id', editCart);
-router.patch('/:id', editCart);
+router.put('/:id', editCartLimiter, editCart);
+router.patch('/:id', editCartLimiter, editCart);
 
 // Delete cart
 router.delete('/:id', deleteCartLimiter, deleteCart);
