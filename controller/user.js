@@ -78,9 +78,22 @@ export async function editUser(req, res) {
         }
 
         const id = parseInt(req.params.id);
+        const allowedFields = ['email', 'username', 'name', 'address', 'phone'];
+        const safeUpdate = {};
+        for (const key of allowedFields) {
+            if (Object.prototype.hasOwnProperty.call(req.body, key)) {
+                safeUpdate[key] = req.body[key];
+            }
+        }
+        if (Object.keys(safeUpdate).length === 0) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'No valid fields to update',
+            });
+        }
         const updatedUser = await User.findOneAndUpdate(
             { id },
-            { $set: req.body },
+            { $set: safeUpdate },
             { new: true }
         ).select('-_id');
 
