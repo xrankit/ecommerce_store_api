@@ -23,6 +23,13 @@ const editUserLimiter = rateLimit({
     message: 'Too many update requests from this IP, please try again later.'
 });
 
+// Rate limiter for adding users (POST)
+const addUserLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: 'Too many user creation requests from this IP, please try again later.'
+});
+
 // Get all users (supports ?limit & ?sort)
 router.get('/', getAllUsers);
 
@@ -30,7 +37,7 @@ router.get('/', getAllUsers);
 router.get('/:id', getUser);
 
 // Add a new user
-router.post('/', addUser);
+router.post('/', addUserLimiter, addUser);
 
 // Update a user completely or partially by numeric ID
 router.put('/:id', editUserLimiter, editUser);
