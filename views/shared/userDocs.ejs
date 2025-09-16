@@ -7,7 +7,7 @@
             </svg>
             Users</h2>
         <h3 id="u-all">Get all users</h3>
-        <pre><code>fetch(<span class="c-api">'https://ecommerceStoreAPI.com/users'</span>)
+        <pre><code>fetch(<span class="c-api">'/users'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -62,7 +62,7 @@
 
 
         <h3 id="u-single">Get a single user</h3>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users/1'</span>)
+        <pre><code>fetch('<span class="c-api">/users/1'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -94,7 +94,7 @@
 
 
         <h3 id="u-limit">Limit results</h3>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users?limit=5'</span>)
+        <pre><code>fetch('<span class="c-api">/users?limit=5'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <button class="show-output btn btn-outline">Show output</button>
@@ -150,7 +150,7 @@
 
 
         <h3 id="u-sort">Sort results</h3>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users?sort=desc'</span>)
+        <pre><code>fetch('<span class="c-api">/users?sort=desc'</span>)
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
         <p>
@@ -216,7 +216,7 @@
 
 
         <h3 id="u-new">Add a new user</h3>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users'</span>,{
+        <pre><code>fetch('<span class="c-api">/users'</span>,{
             method:"POST",
             body:JSON.stringify(
                 {
@@ -283,7 +283,7 @@
 
 
         <h3 id="u-update">Update a users</h3>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users/7'</span>,{
+        <pre><code>fetch('<span class="c-api">/users/7'</span>,{
             method:"PUT",
             body:JSON.stringify(
                 {
@@ -310,7 +310,7 @@
         })
             .then(res=>res.json())
             .then(json=>console.log(json))</code></pre>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users/7'</span>,{
+        <pre><code>fetch('<span class="c-api">/users/7'</span>,{
                 method:"PATCH",
                 body:JSON.stringify(
                     {
@@ -375,7 +375,7 @@
 
 
         <h3 id="u-delete">Delete a user</h3>
-        <pre><code>fetch('<span class="c-api">https://ecommerceStoreAPI.com/users/6'</span>,{
+        <pre><code>fetch('<span class="c-api">/users/6'</span>,{
             method:"DELETE"
         })
             .then(res=>res.json())
