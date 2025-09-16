@@ -4,7 +4,7 @@ const productSchema = new Schema({
   id: {
     type: Number,
     required: true,
-    unique: true, // each product should have a unique id
+    unique: true, // ensures each product has a unique numeric id
   },
   title: {
     type: String,
@@ -31,5 +31,4 @@ const productSchema = new Schema({
   },
 });
 
-// Export model (use capitalized name)
 export default model("Product", productSchema);

@@ -1,66 +1,78 @@
 import supertest from "supertest";
 import app from '../app.js';
 
-let createdProductId; 
+let createdProductId; // Will store our numeric id
 
-describe("Testing products API", () => {
-    it("all products", async () => {
+describe("Testing products API with numeric id", () => {
+
+    it("GET all products", async () => {
         const response = await supertest(app).get("/products");
         expect(response.status).toBe(200);
-        console.log("get", response.body);
-        expect(response.body).not.toStrictEqual([]);
+        console.log("GET all:", response.body);
+        expect(Array.isArray(response.body)).toBe(true);
     });
 
-    it("post a product", async () => {
+    it("POST a product", async () => {
         const response = await supertest(app).post("/products").send({
-            title: "test",
+            title: "test product",
             price: 13.5,
-            description: "test desc",
+            description: "test description",
             image: "test img",
-            category: "test cat",
+            category: "test category",
         });
+
         expect(response.status).toBe(200);
-        console.log("post", response.body);
+        console.log("POST:", response.body);
 
-        // mongoose usually returns _id
-        expect(response.body).toHaveProperty("_id");
-
-        createdProductId = response.body._id;
+        // Check that numeric id exists
+        expect(response.body).toHaveProperty("id");
+        createdProductId = response.body.id; // ✅ store numeric id
     });
 
-    it("get a single product", async () => {
+    it("GET single product by id", async () => {
         const response = await supertest(app).get(`/products/${createdProductId}`);
         expect(response.status).toBe(200);
-        console.log("get by id", response.body);
+        console.log("GET by id:", response.body);
+
         expect(response.body).toHaveProperty("title");
+        expect(response.body.id).toBe(createdProductId);
     });
 
-    it("put a product", async () => {
+    it("PUT (update) product by id", async () => {
         const response = await supertest(app).put(`/products/${createdProductId}`).send({
-            title: "updated test",
+            title: "updated product",
             price: 20.0,
             description: "updated desc",
             image: "updated img",
-            category: "updated cat",
+            category: "updated category",
         });
+
         expect(response.status).toBe(200);
-        console.log("put", response.body);
-        expect(response.body).toHaveProperty("_id");
+        console.log("PUT:", response.body);
+
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.title).toBe("updated product");
     });
 
-    it("patch a product", async () => {
+    it("PATCH (partial update) product by id", async () => {
         const response = await supertest(app).patch(`/products/${createdProductId}`).send({
             price: 25.0,
         });
+
         expect(response.status).toBe(200);
-        console.log("patch", response.body);
-        expect(response.body).toHaveProperty("_id");
+        console.log("PATCH:", response.body);
+
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.price).toBe(25.0);
     });
 
-    it("delete a product", async () => {
+    it("DELETE product by id", async () => {
         const response = await supertest(app).delete(`/products/${createdProductId}`);
         expect(response.status).toBe(200);
-        console.log("delete", response.body);
-        expect(response.body).toHaveProperty("_id");
+        console.log("DELETE:", response.body);
+
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.id).toBe(createdProductId);
     });
+
 });
