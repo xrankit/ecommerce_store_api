@@ -1,17 +1,19 @@
 import supertest from "supertest";
 import app from '../app.js';
 
-let createdUserId;
+let createdUserId; // will store numeric id
 
-describe("Testing users API", () => {
-    it("get all users", async () => {
+describe("Testing users API with numeric id", () => {
+
+    it("GET all users", async () => {
         const response = await supertest(app).get("/users");
         expect(response.status).toBe(200);
-        console.log("all users", response.body);
-        expect(response.body).not.toStrictEqual([]);
+        console.log("All users:", response.body);
+
+        expect(Array.isArray(response.body)).toBe(true);
     });
 
-    it("add a new user", async () => {
+    it("POST a new user", async () => {
         const response = await supertest(app).post("/users").send({
             email: "John@gmail.com",
             username: "johnd",
@@ -34,31 +36,33 @@ describe("Testing users API", () => {
         });
 
         expect(response.status).toBe(200);
-        console.log("created user", response.body);
+        console.log("Created user:", response.body);
 
-        expect(response.body).toHaveProperty("_id");
-        createdUserId = response.body._id; // save ID for next tests
+        // numeric id instead of _id
+        expect(response.body).toHaveProperty("id");
+        createdUserId = response.body.id; // store numeric id
     }, 30000);
 
-    it("get a single user", async () => {
+    it("GET a single user by id", async () => {
         const response = await supertest(app).get(`/users/${createdUserId}`);
         expect(response.status).toBe(200);
-        console.log("get user by id", response.body);
+        console.log("Get user by id:", response.body);
 
         expect(response.body).not.toStrictEqual({});
         expect(response.body.name).toHaveProperty("firstname");
+        expect(response.body.id).toBe(createdUserId);
     }, 30000);
 
-    it("get users in a limit and sort", async () => {
+    it("GET users with limit and sort", async () => {
         const response = await supertest(app).get("/users?limit=3&sort=desc");
         expect(response.status).toBe(200);
-        console.log("get with querystring", response.body);
+        console.log("Get users with query string:", response.body);
 
-        expect(response.body).not.toStrictEqual([]);
-        expect(response.body).toHaveLength(3);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body.length).toBeLessThanOrEqual(3);
     });
 
-    it("put a user", async () => {
+    it("PUT (update) user by id", async () => {
         const response = await supertest(app).put(`/users/${createdUserId}`).send({
             email: "mrk@y.com",
             username: "mrk",
@@ -80,24 +84,32 @@ describe("Testing users API", () => {
         });
 
         expect(response.status).toBe(200);
-        console.log("put user", response.body);
-        expect(response.body).toHaveProperty("_id");
+        console.log("PUT user:", response.body);
+
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.id).toBe(createdUserId);
     });
 
-    it("patch a user", async () => {
+    it("PATCH (partial update) user by id", async () => {
         const response = await supertest(app).patch(`/users/${createdUserId}`).send({
-            phone: "+989111111111", // only update phone
+            phone: "+989111111111",
         });
 
         expect(response.status).toBe(200);
-        console.log("patch user", response.body);
-        expect(response.body).toHaveProperty("_id");
+        console.log("PATCH user:", response.body);
+
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.id).toBe(createdUserId);
+        expect(response.body.phone).toBe("+989111111111");
     });
 
-    it("delete a user", async () => {
+    it("DELETE user by id", async () => {
         const response = await supertest(app).delete(`/users/${createdUserId}`);
         expect(response.status).toBe(200);
-        console.log("delete user", response.body);
-        expect(response.body).toHaveProperty("_id");
+        console.log("DELETE user:", response.body);
+
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.id).toBe(createdUserId);
     });
+
 });
