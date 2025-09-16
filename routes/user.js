@@ -30,11 +30,18 @@ const addUserLimiter = rateLimit({
     message: 'Too many user creation requests from this IP, please try again later.'
 });
 
+// Rate limiter for fetching a single user (GET by ID)
+const getUserLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 60, // limit each IP to 60 requests per windowMs
+    message: 'Too many requests for this user from this IP, please try again later.'
+});
+
 // Get all users (supports ?limit & ?sort)
 router.get('/', getAllUsers);
 
 // Get single user by numeric ID
-router.get('/:id', getUser);
+router.get('/:id', getUserLimiter, getUser);
 
 // Add a new user
 router.post('/', addUserLimiter, addUser);
