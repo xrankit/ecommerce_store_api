@@ -1,15 +1,15 @@
 import Cart from "../model/cart.js";
 
-// GET all carts (with optional limit, sort, date range)
+// GET all carts (optional limit, sort, date range)
 export async function getAllCarts(req, res) {
   try {
     const limit = Number(req.query.limit) || 0;
     const sort = req.query.sort === "desc" ? -1 : 1;
-    const startDate = new Date(req.query.startdate || "1970-01-01");
-    const endDate = new Date(req.query.enddate || new Date());
+    const startDate = req.query.startdate ? new Date(req.query.startdate) : new Date("1970-01-01");
+    const endDate = req.query.enddate ? new Date(req.query.enddate) : new Date();
 
     const carts = await Cart.find({
-      date: { $gte: startDate, $lt: endDate },
+      date: { $gte: startDate, $lte: endDate },
     })
       .select("-_id -products._id")
       .limit(limit)
@@ -22,16 +22,16 @@ export async function getAllCarts(req, res) {
   }
 }
 
-// GET carts by userId
-export async function getCartsByUserid(req, res) {
+// GET carts by userId (with optional date range)
+export async function getCartsByUserId(req, res) {
   try {
-    const userId = req.params.userid;
-    const startDate = new Date(req.query.startdate || "1970-01-01");
-    const endDate = new Date(req.query.enddate || new Date());
+    const userId = parseInt(req.params.userId);
+    const startDate = req.query.startdate ? new Date(req.query.startdate) : new Date("1970-01-01");
+    const endDate = req.query.enddate ? new Date(req.query.enddate) : new Date();
 
     const carts = await Cart.find({
       userId,
-      date: { $gte: startDate, $lt: endDate },
+      date: { $gte: startDate, $lte: endDate },
     }).select("-_id -products._id");
 
     res.json(carts);
@@ -41,10 +41,10 @@ export async function getCartsByUserid(req, res) {
   }
 }
 
-// GET single cart by ID
+// GET single cart by numeric ID
 export async function getSingleCart(req, res) {
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const cart = await Cart.findOne({ id }).select("-_id -products._id");
 
     if (!cart) return res.status(404).json({ message: "Cart not found" });
@@ -58,40 +58,35 @@ export async function getSingleCart(req, res) {
 // ADD new cart
 export async function addCart(req, res) {
   try {
-    if (!req.body) {
-      return res.status(400).json({ message: "Data is required" });
-    }
+    if (!req.body) return res.status(400).json({ message: "Data is required" });
 
     const { userId, date, products } = req.body;
 
-    // auto-generate id (count + 1)
-    const count = await Cart.countDocuments();
-    const newCart = new Cart({
-      id: count + 1,
-      userId,
-      date,
-      products,
-    });
+    // auto-generate numeric ID
+    const lastCart = await Cart.findOne().sort({ id: -1 });
+    const newId = lastCart ? lastCart.id + 1 : 1;
 
+    const newCart = new Cart({ id: newId, userId, date, products });
     const savedCart = await newCart.save();
-    res.status(201).json(savedCart);
+
+    const response = savedCart.toObject();
+    delete response._id; // remove Mongo ID
+    res.status(201).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 }
 
-// EDIT cart
+// EDIT cart (PUT / PATCH)
 export async function editCart(req, res) {
   try {
-    const id = req.params.id;
-    if (!req.body) {
-      return res.status(400).json({ message: "Data is required" });
-    }
+    const id = parseInt(req.params.id);
+    if (!req.body) return res.status(400).json({ message: "Data is required" });
 
     const updatedCart = await Cart.findOneAndUpdate(
       { id },
-      req.body,
+      { $set: req.body },
       { new: true }
     ).select("-_id -products._id");
 
@@ -106,11 +101,11 @@ export async function editCart(req, res) {
 // DELETE cart
 export async function deleteCart(req, res) {
   try {
-    const id = req.params.id;
-    const deletedCart = await Cart.findOneAndDelete({ id });
+    const id = parseInt(req.params.id);
+    const deletedCart = await Cart.findOneAndDelete({ id }).select("-_id -products._id");
 
     if (!deletedCart) return res.status(404).json({ message: "Cart not found" });
-    res.json({ message: "Cart deleted successfully", cart: deletedCart });
+    res.json({ status: "success", message: "Cart deleted", cart: deletedCart });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

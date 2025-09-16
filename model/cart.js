@@ -1,38 +1,33 @@
 import { Schema, model } from "mongoose";
-import Product from "./product.js";
-import User from "./user.js";
 
-// Define schema
+// Cart Schema
 const cartSchema = new Schema({
   id: {
     type: Number,
     required: true,
-    unique: true, // optional but recommended if "id" is unique
+    unique: true, // numeric cart ID
   },
   userId: {
-    type: Schema.Types.ObjectId, // Should be ObjectId, not Number
-    ref: "User", // Reference model name (string), not imported model
+    type: Number, // use numeric ID for consistency with your users
     required: true,
   },
   date: {
     type: Date,
-    default: Date.now, // optional default
+    default: Date.now,
   },
   products: [
     {
       productId: {
-        type: Schema.Types.ObjectId, // Should be ObjectId, not Number
-        ref: "Product", // Reference model name
+        type: Number, // numeric product ID
         required: true,
       },
       quantity: {
         type: Number,
         required: true,
-        min: 1, // prevent 0 or negative quantity
+        min: 1,
       },
     },
   ],
 });
 
-// Export model
 export default model("Cart", cartSchema);
