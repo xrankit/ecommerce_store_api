@@ -16,6 +16,13 @@ const deleteUserLimiter = rateLimit({
     message: 'Too many delete requests from this IP, please try again later.'
 });
 
+// Rate limiter for editing users (PUT/PATCH)
+const editUserLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: 'Too many update requests from this IP, please try again later.'
+});
+
 // Get all users (supports ?limit & ?sort)
 router.get('/', getAllUsers);
 
@@ -26,8 +33,8 @@ router.get('/:id', getUser);
 router.post('/', addUser);
 
 // Update a user completely or partially by numeric ID
-router.put('/:id', editUser);
-router.patch('/:id', editUser);
+router.put('/:id', editUserLimiter, editUser);
+router.patch('/:id', editUserLimiter, editUser);
 
 // Delete a user by numeric ID
 router.delete('/:id', deleteUserLimiter, deleteUser);
