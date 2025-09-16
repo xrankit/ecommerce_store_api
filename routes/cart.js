@@ -1,6 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 
+import rateLimit from 'express-rate-limit';
 import {
   getAllCarts,
   getSingleCart,
@@ -9,6 +10,13 @@ import {
   editCart,
   deleteCart
 } from '../controller/cart.js';
+
+// Strict rate limiter for destructive actions
+const deleteCartLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 delete requests per windowMs
+  message: 'Too many delete requests from this IP, please try again later'
+});
 
 // More specific route first
 router.get('/user/:userid', getCartsByUserid);
@@ -27,6 +35,6 @@ router.put('/:id', editCart);
 router.patch('/:id', editCart);
 
 // Delete cart
-router.delete('/:id', deleteCart);
+router.delete('/:id', deleteCartLimiter, deleteCart);
 
 export default router;
