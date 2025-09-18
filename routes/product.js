@@ -1,5 +1,7 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 const router = Router();
+
 import {
   getAllProducts,
   getProductCategories,
@@ -9,9 +11,6 @@ import {
   editProduct,
   deleteProduct
 } from "../controller/product.js";
-
-// Get all products
-router.get("/", getAllProducts);
 
 // Get all categories
 router.get("/categories", getProductCategories);
