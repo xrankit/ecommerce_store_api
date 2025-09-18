@@ -106,7 +106,18 @@ export async function editProduct(req, res) {
         const update = {};
         for (const key of allowedUpdates) {
             if (Object.prototype.hasOwnProperty.call(req.body, key)) {
-                update[key] = req.body[key];
+                const value = req.body[key];
+                // Only allow primitive types (string, number, boolean, null) as values for update
+                if (
+                    value !== null &&
+                    (typeof value === 'object' || Array.isArray(value))
+                ) {
+                    return res.status(400).json({
+                        status: 'error',
+                        message: `Invalid value for field '${key}': must not be object or array`,
+                    });
+                }
+                update[key] = value;
             }
         }
         if (Object.keys(update).length === 0) {
