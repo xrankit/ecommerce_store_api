@@ -32,11 +32,18 @@ const getCartLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again later'
 });
 
+// Moderate rate limiter for getting all carts
+const getAllCartsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later'
+});
+
 // More specific route first
 router.get('/user/:userid', getCartsByUserid);
 
 // Get all carts (optional query params)
-router.get('/', getAllCarts);
+router.get('/', getAllCartsLimiter, getAllCarts);
 
 // Get single cart by numeric ID
 router.get('/:id', getCartLimiter, getSingleCart);
