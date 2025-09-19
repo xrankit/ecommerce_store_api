@@ -48,6 +48,11 @@ export async function login(req, res) {
       return res.status(400).json({ message: "Username and password are required" });
     }
 
+    // Validate username is a string to prevent NoSQL injection
+    if (typeof username !== "string") {
+      return res.status(400).json({ message: "Invalid username format" });
+    }
+
     const user = await User.findOne({ username });
 
     if (!user) {

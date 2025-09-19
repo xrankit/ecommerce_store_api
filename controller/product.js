@@ -101,7 +101,29 @@ export async function editProduct(req, res) {
 
     try {
         const id = parseInt(req.params.id);
-        const updatedProduct = await Product.findOneAndUpdate({ id }, { ...req.body }, { new: true }).select('-_id');
+        // Whitelist only allowed fields for update
+        const allowedUpdates = ['title', 'description', 'category', 'price', 'image', 'rating', 'otherAllowedField'];
+        const update = {};
+        for (const key of allowedUpdates) {
+            if (Object.prototype.hasOwnProperty.call(req.body, key)) {
+                const value = req.body[key];
+                // Only allow primitive types (string, number, boolean, null) as values for update
+                if (
+                    value !== null &&
+                    (typeof value === 'object' || Array.isArray(value))
+                ) {
+                    return res.status(400).json({
+                        status: 'error',
+                        message: `Invalid value for field '${key}': must not be object or array`,
+                    });
+                }
+                update[key] = value;
+            }
+        }
+        if (Object.keys(update).length === 0) {
+            return res.status(400).json({ status: 'error', message: 'No valid fields to update' });
+        }
+        const updatedProduct = await Product.findOneAndUpdate({ id }, { $set: update }, { new: true }).select('-_id');
 
         if (!updatedProduct) return res.status(404).json({ error: 'Product not found' });
 

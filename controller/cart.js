@@ -84,9 +84,21 @@ export async function editCart(req, res) {
     const id = parseInt(req.params.id);
     if (!req.body) return res.status(400).json({ message: "Data is required" });
 
+    // Only allow specific fields to be updated
+    const allowedFields = ['userId', 'date', 'products'];
+    const sanitizedBody = {};
+    for (const key of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(req.body, key)) {
+        sanitizedBody[key] = req.body[key];
+      }
+    }
+    if (Object.keys(sanitizedBody).length === 0) {
+      return res.status(400).json({ message: "No valid fields to update" });
+    }
+
     const updatedCart = await Cart.findOneAndUpdate(
       { id },
-      { $set: req.body },
+      { $set: sanitizedBody },
       { new: true }
     ).select("-_id -products._id");
 

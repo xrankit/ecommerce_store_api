@@ -1,5 +1,12 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 const router = Router();
+
+// Set up rate limiter: 100 requests per 15 mins per IP for sensitive routes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 import {
   getAllProducts,
   getProductCategories,
@@ -10,26 +17,23 @@ import {
   deleteProduct
 } from "../controller/product.js";
 
-// Get all products
-router.get("/", getAllProducts);
-
 // Get all categories
-router.get("/categories", getProductCategories);
+router.get("/categories", limiter, getProductCategories);
 
 // Get products in a specific category
-router.get("/category/:category", getProductsInCategory);
+router.get("/category/:category", limiter, getProductsInCategory);
 
 // Get single product by numeric id
-router.get("/:id", getProduct);
+router.get("/:id", limiter, getProduct);
 
 // Add new product
-router.post("/", addProduct);
+router.post("/", limiter, addProduct);
 
 // Update product by numeric id (full or partial)
-router.put("/:id", editProduct);
-router.patch("/:id", editProduct);
+router.put("/:id", limiter, editProduct);
+router.patch("/:id", limiter, editProduct);
 
 // Delete product by numeric id
-router.delete("/:id", deleteProduct);
+router.delete("/:id", limiter, deleteProduct);
 
 export default router;
