@@ -30,8 +30,8 @@ router.get("/:id", getProduct);
 router.post("/", addProduct);
 
 // Update product by numeric id (full or partial)
-router.put("/:id", editProduct);
-router.patch("/:id", editProduct);
+router.put("/:id", limiter, editProduct);
+router.patch("/:id", limiter, editProduct);
 
 // Delete product by numeric id
 router.delete("/:id", limiter, deleteProduct);
