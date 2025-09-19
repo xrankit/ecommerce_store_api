@@ -39,6 +39,13 @@ const getAllCartsLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again later'
 });
 
+// Rate limiter for adding carts
+const addCartLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 add requests per windowMs
+  message: 'Too many add cart requests from this IP, please try again later'
+});
+
 // More specific route first
 router.get('/user/:userid', getCartsByUserid);
 
@@ -49,7 +56,7 @@ router.get('/', getAllCartsLimiter, getAllCarts);
 router.get('/:id', getCartLimiter, getSingleCart);
 
 // Add new cart
-router.post('/', addCart);
+router.post('/', addCartLimiter, addCart);
 
 // Update cart (full or partial)
 router.put('/:id', editCartLimiter, editCart);
