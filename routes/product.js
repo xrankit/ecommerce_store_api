@@ -21,7 +21,7 @@ import {
 router.get("/categories", limiter, getProductCategories);
 
 // Get products in a specific category
-router.get("/category/:category", getProductsInCategory);
+router.get("/category/:category", limiter, getProductsInCategory);
 
 // Get single product by numeric id
 router.get("/:id", getProduct);
