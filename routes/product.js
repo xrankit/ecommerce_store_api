@@ -18,7 +18,7 @@ import {
 } from "../controller/product.js";
 
 // Get all categories
-router.get("/categories", getProductCategories);
+router.get("/categories", limiter, getProductCategories);
 
 // Get products in a specific category
 router.get("/category/:category", getProductsInCategory);
