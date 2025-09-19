@@ -2,6 +2,11 @@ import { Router } from "express";
 import rateLimit from "express-rate-limit";
 const router = Router();
 
+// Set up rate limiter: 100 requests per 15 mins per IP for sensitive routes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 import {
   getAllProducts,
   getProductCategories,
@@ -29,6 +34,6 @@ router.put("/:id", editProduct);
 router.patch("/:id", editProduct);
 
 // Delete product by numeric id
-router.delete("/:id", deleteProduct);
+router.delete("/:id", limiter, deleteProduct);
 
 export default router;
