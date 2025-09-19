@@ -123,7 +123,7 @@ export async function editProduct(req, res) {
         if (Object.keys(update).length === 0) {
             return res.status(400).json({ status: 'error', message: 'No valid fields to update' });
         }
-        const updatedProduct = await Product.findOneAndUpdate({ id }, update, { new: true }).select('-_id');
+        const updatedProduct = await Product.findOneAndUpdate({ id }, { $set: update }, { new: true }).select('-_id');
 
         if (!updatedProduct) return res.status(404).json({ error: 'Product not found' });
 
