@@ -17,10 +17,10 @@
     "dotenv": "^16.0.0",
     "dotenv-expand": "^8.0.1",
     "express": "^4.17.1",
+    "express-rate-limit": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.19.0",
-    "mongoose": "^8.18.1",
-    "express-rate-limit": "^8.1.0"
+    "mongoose": "^8.18.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
