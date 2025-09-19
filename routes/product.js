@@ -24,7 +24,7 @@ router.get("/categories", limiter, getProductCategories);
 router.get("/category/:category", limiter, getProductsInCategory);
 
 // Get single product by numeric id
-router.get("/:id", getProduct);
+router.get("/:id", limiter, getProduct);
 
 // Add new product
 router.post("/", addProduct);
