@@ -27,7 +27,7 @@ router.get("/category/:category", limiter, getProductsInCategory);
 router.get("/:id", limiter, getProduct);
 
 // Add new product
-router.post("/", addProduct);
+router.post("/", limiter, addProduct);
 
 // Update product by numeric id (full or partial)
 router.put("/:id", limiter, editProduct);
