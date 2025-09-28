@@ -1,12 +1,19 @@
 import Cart from "../model/cart.js";
+import Counter from "../model/counter.js";
 
-// GET all carts (optional limit, sort, date range)
+// helper to safely parse date
+function parseDate(value, fallback) {
+  const date = new Date(value);
+  return isNaN(date) ? fallback : date;
+}
+
+// GET all carts
 export async function getAllCarts(req, res) {
   try {
     const limit = Number(req.query.limit) || 0;
     const sort = req.query.sort === "desc" ? -1 : 1;
-    const startDate = req.query.startdate ? new Date(req.query.startdate) : new Date("1970-01-01");
-    const endDate = req.query.enddate ? new Date(req.query.enddate) : new Date();
+    const startDate = parseDate(req.query.startdate, new Date("1970-01-01"));
+    const endDate = parseDate(req.query.enddate, new Date());
 
     const carts = await Cart.find({
       date: { $gte: startDate, $lte: endDate },
@@ -22,12 +29,12 @@ export async function getAllCarts(req, res) {
   }
 }
 
-// GET carts by userId (with optional date range)
+// GET carts by userId
 export async function getCartsByUserId(req, res) {
   try {
     const userId = parseInt(req.params.userId);
-    const startDate = req.query.startdate ? new Date(req.query.startdate) : new Date("1970-01-01");
-    const endDate = req.query.enddate ? new Date(req.query.enddate) : new Date();
+    const startDate = parseDate(req.query.startdate, new Date("1970-01-01"));
+    const endDate = parseDate(req.query.enddate, new Date());
 
     const carts = await Cart.find({
       userId,
@@ -41,7 +48,7 @@ export async function getCartsByUserId(req, res) {
   }
 }
 
-// GET single cart by numeric ID
+// GET single cart
 export async function getSingleCart(req, res) {
   try {
     const id = parseInt(req.params.id);
@@ -55,22 +62,31 @@ export async function getSingleCart(req, res) {
   }
 }
 
-// ADD new cart
+// ADD new cart (safe auto-increment)
 export async function addCart(req, res) {
   try {
     if (!req.body) return res.status(400).json({ message: "Data is required" });
 
     const { userId, date, products } = req.body;
 
-    // auto-generate numeric ID
-    const lastCart = await Cart.findOne().sort({ id: -1 });
-    const newId = lastCart ? lastCart.id + 1 : 1;
+    // get next sequence number safely
+    const counter = await Counter.findOneAndUpdate(
+      { name: "cartId" },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
 
-    const newCart = new Cart({ id: newId, userId, date, products });
+    const newCart = new Cart({
+      id: counter.value,
+      userId,
+      date,
+      products,
+    });
+
     const savedCart = await newCart.save();
-
     const response = savedCart.toObject();
-    delete response._id; // remove Mongo ID
+    delete response._id;
+
     res.status(201).json(response);
   } catch (err) {
     console.error(err);
@@ -78,13 +94,12 @@ export async function addCart(req, res) {
   }
 }
 
-// EDIT cart (PUT / PATCH)
+// EDIT cart
 export async function editCart(req, res) {
   try {
     const id = parseInt(req.params.id);
     if (!req.body) return res.status(400).json({ message: "Data is required" });
 
-    // Only allow specific fields to be updated
     const allowedFields = ['userId', 'date', 'products'];
     const sanitizedBody = {};
     for (const key of allowedFields) {
@@ -92,6 +107,7 @@ export async function editCart(req, res) {
         sanitizedBody[key] = req.body[key];
       }
     }
+
     if (Object.keys(sanitizedBody).length === 0) {
       return res.status(400).json({ message: "No valid fields to update" });
     }

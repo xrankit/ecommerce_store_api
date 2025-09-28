@@ -1,68 +1,55 @@
 import { Router } from 'express';
-const router = Router();
-
 import rateLimit from 'express-rate-limit';
+
 import {
   getAllCarts,
   getSingleCart,
-  getCartsByUserid,
+  getCartsByUserId,
   addCart,
   editCart,
   deleteCart
 } from '../controller/cart.js';
 
-// Strict rate limiter for destructive actions
+const router = Router();
+
+// 🔒 Strict rate limiter for destructive actions
 const deleteCartLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 delete requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: 'Too many delete requests from this IP, please try again later'
 });
 
-// Moderate rate limiter for edit (update/patch) actions
+// 🔒 Moderate rate limiter for edit actions
 const editCartLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // limit each IP to 20 edit requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 20,
   message: 'Too many update requests from this IP, please try again later'
 });
 
-// Moderate rate limiter for reading single cart
-const getCartLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+// 🔒 Shared rate limiter for reads
+const readCartLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again later'
 });
 
-// Moderate rate limiter for getting all carts
-const getAllCartsLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later'
-});
-
-// Rate limiter for adding carts
+// 🔒 Rate limiter for adding carts
 const addCartLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // limit each IP to 10 add requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   message: 'Too many add cart requests from this IP, please try again later'
 });
 
-// More specific route first
-router.get('/user/:userid', getCartsByUserid);
+// 📌 Routes
+router.get('/user/:userId', readCartLimiter, getCartsByUserId);
+router.get('/', readCartLimiter, getAllCarts);
+router.get('/:id', readCartLimiter, getSingleCart);
 
-// Get all carts (optional query params)
-router.get('/', getAllCartsLimiter, getAllCarts);
-
-// Get single cart by numeric ID
-router.get('/:id', getCartLimiter, getSingleCart);
-
-// Add new cart
 router.post('/', addCartLimiter, addCart);
 
-// Update cart (full or partial)
 router.put('/:id', editCartLimiter, editCart);
 router.patch('/:id', editCartLimiter, editCart);
 
-// Delete cart
 router.delete('/:id', deleteCartLimiter, deleteCart);
 
 export default router;

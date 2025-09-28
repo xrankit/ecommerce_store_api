@@ -1,15 +1,16 @@
 import { Schema, model } from "mongoose";
 
-// Cart Schema
 const cartSchema = new Schema({
   id: {
     type: Number,
     required: true,
-    unique: true, // numeric cart ID
+    unique: true,
+    index: true
   },
   userId: {
-    type: Number, // use numeric ID for consistency with your users
+    type: Number,
     required: true,
+    index: true
   },
   date: {
     type: Date,
@@ -18,7 +19,7 @@ const cartSchema = new Schema({
   products: [
     {
       productId: {
-        type: Number, // numeric product ID
+        type: Number,
         required: true,
       },
       quantity: {
