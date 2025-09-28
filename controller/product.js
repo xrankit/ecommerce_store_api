@@ -1,4 +1,15 @@
 import Product from '../model/product.js';
+import Counter from '../model/counter.js';
+
+// ✅ Helper function to get next sequence
+async function getNextSequence(name) {
+    const counter = await Counter.findByIdAndUpdate(
+        name,
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true } // if not exists, create
+    );
+    return counter.seq;
+}
 
 // Get all products
 export async function getAllProducts(req, res) {
@@ -63,16 +74,14 @@ export async function getProductsInCategory(req, res) {
     }
 }
 
-// Add a new product
+// ✅ Add a new product with counter-based id
 export async function addProduct(req, res) {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ status: 'error', message: 'data is undefined' });
     }
 
     try {
-        // Auto-increment ID based on max existing ID
-        const lastProduct = await Product.findOne().sort({ id: -1 });
-        const newId = lastProduct ? lastProduct.id + 1 : 1;
+        const newId = await getNextSequence("productId"); // counter.js used here
 
         const newProduct = new Product({
             id: newId,
@@ -101,17 +110,13 @@ export async function editProduct(req, res) {
 
     try {
         const id = parseInt(req.params.id);
-        // Whitelist only allowed fields for update
-        const allowedUpdates = ['title', 'description', 'category', 'price', 'image', 'rating', 'otherAllowedField'];
+        const allowedUpdates = ['title', 'description', 'category', 'price', 'image', 'rating'];
         const update = {};
+
         for (const key of allowedUpdates) {
             if (Object.prototype.hasOwnProperty.call(req.body, key)) {
                 const value = req.body[key];
-                // Only allow primitive types (string, number, boolean, null) as values for update
-                if (
-                    value !== null &&
-                    (typeof value === 'object' || Array.isArray(value))
-                ) {
+                if (value !== null && (typeof value === 'object' || Array.isArray(value))) {
                     return res.status(400).json({
                         status: 'error',
                         message: `Invalid value for field '${key}': must not be object or array`,
@@ -120,10 +125,16 @@ export async function editProduct(req, res) {
                 update[key] = value;
             }
         }
+
         if (Object.keys(update).length === 0) {
             return res.status(400).json({ status: 'error', message: 'No valid fields to update' });
         }
-        const updatedProduct = await Product.findOneAndUpdate({ id }, { $set: update }, { new: true }).select('-_id');
+
+        const updatedProduct = await Product.findOneAndUpdate(
+            { id },
+            { $set: update },
+            { new: true }
+        ).select('-_id');
 
         if (!updatedProduct) return res.status(404).json({ error: 'Product not found' });
 
